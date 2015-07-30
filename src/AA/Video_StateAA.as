@@ -5,7 +5,7 @@ package AA
 	
 	import org.agony2d.Agony;
 	import org.agony2d.core.inside.agony_internal;
-	import org.agony2d.display.AAFacade;
+	import org.agony2d.display.AACore;
 	import org.agony2d.display.ImageAA;
 	import org.agony2d.display.StateAA;
 	import org.agony2d.display.textures.VideoTextureAA;
@@ -59,7 +59,7 @@ public class Video_StateAA extends StateAA
 	}
 	
 	override public function onExit() : void {
-		AAFacade.unregisterAsset("videoA");
+		AACore.unregisterAsset("videoA");
 	}
 	
 	private function onClick(e:ATouchEvent):void {
@@ -76,16 +76,26 @@ public class Video_StateAA extends StateAA
 	}
 	
 	private function onVideo():void{
-		AAFacade.registerAsset("videoA", videoTEX, "videoA");
+		var ratioX:Number;
+		var ratioY:Number;
+		var ratioA:Number;
+		
+		AACore.registerAsset("videoA", videoTEX, "videoA");
 		
 		img_A = new ImageAA;
 		img_A.textureId = "videoA";
+		img_A.pivotX = img_A.sourceWidth / 2;
+		img_A.pivotY = img_A.sourceHeight / 2;
 		img_A.rotation = 90;
-		img_A.x = img_A.sourceHeight;
-		
+		img_A.x = this.getRoot().getAdapter().rootWidth / 2;
+		img_A.y = this.getRoot().getAdapter().rootHeight / 2;
+		ratioX = img_A.sourceHeight / this.getRoot().getAdapter().rootWidth;
+		ratioY = img_A.sourceWidth / this.getRoot().getAdapter().rootHeight;
 		this.getFusion().addNode(img_A);
+		ratioA = Math.min(ratioX, ratioY);
+		img_A.scaleX = img_A.scaleY = 1 / ratioA + 0.05;
 		
-		LogMachine.g_instance.simplify("{0} | {1}", img_A.sourceWidth, img_A.sourceHeight);
+		LogMachine.g_instance.simplify("{0} | {1}: {2}", img_A.sourceHeight, img_A.sourceWidth, img_A.scaleY);
 	}
 	
 }

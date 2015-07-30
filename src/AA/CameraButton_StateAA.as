@@ -14,6 +14,7 @@ package AA
 	import org.agony2d.display.core.NodeAA;
 	import org.agony2d.events.AEvent;
 	import org.agony2d.events.ATouchEvent;
+	import org.agony2d.events.ComponentEvent;
 	import org.agony2d.events.DragEvent;
 	import org.agony2d.input.Touch;
 	import org.agony2d.utils.AMath;
@@ -24,6 +25,7 @@ package AA
 		override public function onEnter() : void
 		{
 			_dragFusion = new DragFusionAA();
+			_dragFusion.doubleClickEnabled = true;
 			this.getFusion().addNode(_dragFusion);
 			
 			_imgA = new ImageAA;
@@ -40,9 +42,7 @@ package AA
 			
 			_imgA.pivotX = _imgA.sourceWidth / 2;
 			_imgA.pivotY = _imgA.sourceHeight / 2;
-			_imgA.addEventListener(ATouchEvent.PRESS, onTouch);
-			_imgA.addEventListener(ATouchEvent.UNBINDING, onUnbinding);
-			_imgA.addEventListener(ATouchEvent.CLICK, onClick);
+			
 			_imgA.setCollisionMethod(____onCollisionA);
 			
 			_dragFusion.addNode(_imgA);
@@ -56,10 +56,19 @@ package AA
 			
 			_dragFusion.x = _startX;
 			_dragFusion.y = _startY;
+			
+			DOUBLE_CLICK_OFFSET = this.getRoot().getAdapter().rootWidth / WIDTH_RATIO;
+			
+			_imgA.addEventListener(ATouchEvent.PRESS, onTouch);
+			_imgA.addEventListener(ATouchEvent.UNBINDING, onUnbinding);
+			_imgA.addEventListener(ATouchEvent.CLICK, onClick);
+			
+			this.getRoot().getNode().doubleClickEnabled = true;
+			this.getFusion().insertEventListener(this.getRoot().getNode(), ATouchEvent.DOUBLE_CLICK, onDoubleClick);
 		}
 		
 		private function ____onCollisionA(x:Number,y:Number,node:NodeAA):Boolean{
-			if(AMath.distance(x, y, node.x + node.pivotX, node.y + node.pivotY) < this.getRoot().getAdapter().rootWidth / 7.5){
+			if(AMath.distance(x, y, node.x + node.pivotX, node.y + node.pivotY) < this.getRoot().getAdapter().rootWidth / WIDTH_RATIO){
 				return true;
 			}
 			return false;
@@ -70,6 +79,8 @@ package AA
 		}
 		
 		private function onTouch(e:ATouchEvent):void {
+			e.breakExecution();
+			
 			TweenLite.killTweensOf(_dragFusion);
 			
 			_timerA = new Timer(_delayTime, 1);
@@ -82,6 +93,7 @@ package AA
 		}
 		
 		private function onUnbinding(e:ATouchEvent):void{
+			
 			if(_timerA){
 				_timerA.removeEventListener(TimerEvent.TIMER, onTimer);
 				_timerA.stop();
@@ -90,6 +102,7 @@ package AA
 		}
 		
 		private function onClick(e:ATouchEvent):void{
+			
 //			Agony.getLog().simplify(e.type);
 			
 //			this.getRoot().getAdapter().getTouch().touchEnabled = false;
@@ -149,7 +162,9 @@ package AA
 		private var INIT_W:int
 		private var INIT_H:int;
 		
-		private var _delayTime:int = 400;
+		private var WIDTH_RATIO:Number = 6.5;
+		
+		private var _delayTime:int = 350;
 		
 		
 		private var _startX:Number;
@@ -170,5 +185,23 @@ package AA
 		private var _iconA:ImageAA;
 		
 		private var _pressedTouch:Touch;
+		
+		private var DOUBLE_CLICK_OFFSET:Number;
+		
+		
+		private function onDoubleClick(e:ATouchEvent):void{
+			if(e.touch.getBindingNode() == _imgA){
+				return;
+			}
+			
+//			Agony.getLog().simplify(e.type);
+			
+			if(e.touch.rootX < DOUBLE_CLICK_OFFSET && _dragFusion.x < DOUBLE_CLICK_OFFSET){
+				TweenLite.to(_dragFusion, 0.3, { x:_endX, scaleX:1.0, scaleY:1.0, ease:Cubic.easeIn } );
+			}
+			else if(e.touch.rootX > this.getRoot().getAdapter().rootWidth - DOUBLE_CLICK_OFFSET && _dragFusion.x > this.getRoot().getAdapter().rootWidth - DOUBLE_CLICK_OFFSET){
+				TweenLite.to(_dragFusion, 0.3, { x:_startX, scaleX:1.0, scaleY:1.0, ease:Cubic.easeIn } );
+			}
+		}
 	}
 }
