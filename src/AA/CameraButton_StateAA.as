@@ -2,9 +2,12 @@ package AA
 {
 	import com.greensock.TweenLite;
 	import com.greensock.easing.Cubic;
+	import com.greensock.easing.Linear;
 	
+	import flash.events.AccelerometerEvent;
 	import flash.events.TimerEvent;
 	import flash.geom.Rectangle;
+	import flash.sensors.Accelerometer;
 	import flash.utils.Timer;
 	
 	import org.agony2d.Agony;
@@ -14,8 +17,8 @@ package AA
 	import org.agony2d.display.core.NodeAA;
 	import org.agony2d.events.AEvent;
 	import org.agony2d.events.ATouchEvent;
-	import org.agony2d.events.ComponentEvent;
 	import org.agony2d.events.DragEvent;
+	import org.agony2d.flashApi.ImageUU;
 	import org.agony2d.input.Touch;
 	import org.agony2d.utils.AMath;
 	
@@ -63,6 +66,11 @@ package AA
 			_imgA.addEventListener(ATouchEvent.UNBINDING, onUnbinding);
 			_imgA.addEventListener(ATouchEvent.CLICK, onClick);
 			
+			if(Accelerometer.isSupported){
+				_acce = new Accelerometer;
+				_acce.addEventListener(AccelerometerEvent.UPDATE, ____onAcceUpdate);
+			}
+			
 			this.getRoot().getNode().doubleClickEnabled = true;
 			this.getFusion().insertEventListener(this.getRoot().getNode(), ATouchEvent.DOUBLE_CLICK, onDoubleClick);
 		}
@@ -77,6 +85,18 @@ package AA
 		override public function onExit() : void {
 			
 		}
+		
+		
+		
+		private const NORMAL:int = 0;
+		private const TO_LEFT:int = 1;
+		private const TO_RIGHT:int = 2;
+		
+		private var _orientationFlag:int = -1;
+		
+		private var _acce:Accelerometer;
+		
+		
 		
 		private function onTouch(e:ATouchEvent):void {
 			e.breakExecution();
@@ -124,7 +144,7 @@ package AA
 				
 				TweenLite.to(_dragFusion, 0.3, { scaleX:1.2, scaleY:1.2, ease:Cubic.easeIn } );
 				
-				_dragFusion.startDrag(_pressedTouch, new Rectangle(_startX, _startY, _endX - _startX, _endY - _startY), 0, 0, true);
+				_dragFusion.startDrag(_pressedTouch, new Rectangle(_startX, _startY, _endX - _startX, _endY - _startY), 0, -80, true);
 				_dragFusion.addEventListener(DragEvent.STOP_DRAG, onStopDrag);
 			}
 			else {
@@ -155,6 +175,35 @@ package AA
 				else{
 					TweenLite.to(_dragFusion, 0.3, { x:_endX, scaleX:1.0, scaleY:1.0, ease:Cubic.easeIn } );
 				}
+			}
+		}
+		
+		private function ____onAcceUpdate(e:AccelerometerEvent):void{
+			var flag_A:int;
+			
+			if(e.accelerationX <= -0.60){
+				flag_A = TO_RIGHT;
+			}
+			else if(e.accelerationX >= 0.60){
+				flag_A = TO_LEFT;
+			}
+			else {
+				flag_A = NORMAL;
+			}
+			if(_orientationFlag == flag_A) {
+				return;
+			}
+			_orientationFlag = flag_A;
+			Agony.getLog().simplify(_orientationFlag);
+			
+			if(_orientationFlag == NORMAL) {
+				
+			}
+			else if(_orientationFlag == TO_LEFT) {
+				TweenLite.to(_dragFusion, 0.3, { x:_endX, scaleX:1.0, scaleY:1.0, ease:Cubic.easeIn } );
+			}
+			else if(_orientationFlag == TO_RIGHT) {
+				TweenLite.to(_dragFusion, 0.3, { x:_startX, scaleX:1.0, scaleY:1.0, ease:Cubic.easeIn } );
 			}
 		}
 		
@@ -196,9 +245,11 @@ package AA
 			
 //			Agony.getLog().simplify(e.type);
 			
+			// to right
 			if(e.touch.rootX < DOUBLE_CLICK_OFFSET && _dragFusion.x < DOUBLE_CLICK_OFFSET){
 				TweenLite.to(_dragFusion, 0.3, { x:_endX, scaleX:1.0, scaleY:1.0, ease:Cubic.easeIn } );
 			}
+			// to left
 			else if(e.touch.rootX > this.getRoot().getAdapter().rootWidth - DOUBLE_CLICK_OFFSET && _dragFusion.x > this.getRoot().getAdapter().rootWidth - DOUBLE_CLICK_OFFSET){
 				TweenLite.to(_dragFusion, 0.3, { x:_startX, scaleX:1.0, scaleY:1.0, ease:Cubic.easeIn } );
 			}

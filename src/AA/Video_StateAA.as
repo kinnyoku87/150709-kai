@@ -40,13 +40,13 @@ public class Video_StateAA extends StateAA
 					
 //					camera_A.setMode(1080, 1920, 15);
 //					camera_A.setMode(this.getRoot().getAdapter().rootWidth, this.getRoot().getAdapter().rootHeight, 15);
-					camera_A.setMode(this.getRoot().getAdapter().rootHeight, this.getRoot().getAdapter().rootWidth, 15);
+					camera_A.setMode(this.getRoot().getAdapter().rootHeight, this.getRoot().getAdapter().rootWidth, 30);
 					
 					LogMachine.g_instance.simplify("{0} | {1}", this.getRoot().getAdapter().rootHeight, this.getRoot().getAdapter().rootWidth);
 					
 					LogMachine.g_instance.simplify("{0} | {1}", camera_A.height, camera_A.width );
 					
-					camera_A.setQuality(0, 100);
+					camera_A.setQuality(0, 80);
 					
 					videoTEX = new VideoTextureAA(camera_A, onVideo);
 					
