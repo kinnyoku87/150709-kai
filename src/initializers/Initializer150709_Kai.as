@@ -27,7 +27,7 @@ package initializers
 			//stage.quality = StageQuality.MEDIUM
 			//stage.quality = StageQuality.HIGH;
 			
-			this._adapter = Agony.createAdapter(stage, true);
+			this._adapter = Agony.createAdapter(stage, false);
 			this._adapter.getTouch().velocityEnabled = true;
 			//this._adapter.getTouch().autoUnbindingWhenLeaving = true;
 			
@@ -37,12 +37,13 @@ package initializers
 			AACore.registerView("res",     Loading150709_kai_StateAA);
 			AACore.registerView("camera",  CameraButton_StateAA);
 			AACore.registerView("video",   Video_StateAA);
-			_rootAA = AACore.createRoot(this._adapter, 0xFFFFFF);
+			_rootAA = AACore.createRoot(this._adapter, 0x0);
 			_rootAA.addEventListener(AEvent.START, onStart);
 		}
 		
 		private function onStart(e:AEvent):void {	
 			_rootAA.getView("res").activate([["video", "camera"]]);
+//			_rootAA.getView("res").activate([["camera"]]);
 		}
 	}
 }

@@ -2,7 +2,6 @@ package AA
 {
 	import com.greensock.TweenLite;
 	import com.greensock.easing.Cubic;
-	import com.greensock.easing.Linear;
 	
 	import flash.events.AccelerometerEvent;
 	import flash.events.TimerEvent;
@@ -27,13 +26,17 @@ package AA
 		
 		override public function onEnter() : void
 		{
+			_bgA = new ImageAA;
+			this.getFusion().addNode(_bgA);
+			_bgA.textureId = "bgB.png";
+			
 			_dragFusion = new DragFusionAA();
 			_dragFusion.doubleClickEnabled = true;
 			this.getFusion().addNode(_dragFusion);
 			
 			_imgA = new ImageAA;
 //			_imgA.alpha = 0.5;
-			_imgA.textureId = "ui/btnScale9/B/up.png";
+			_imgA.textureId = "btnA.png";
 			
 			INIT_W = _imgA.sourceWidth;
 			INIT_H = this.getRoot().getAdapter().rootHeight / 6.5;
@@ -51,7 +54,7 @@ package AA
 			_dragFusion.addNode(_imgA);
 			
 			_imgB = new ImageAA;
-			_imgB.textureId = "iconA.png";
+			_imgB.textureId = "iconB.png";
 			_imgB.touchable = false;
 			_imgB.pivotX = _imgB.sourceWidth / 2;
 			_imgB.pivotY = _imgB.sourceHeight / 2;
@@ -65,6 +68,8 @@ package AA
 			_imgA.addEventListener(ATouchEvent.PRESS, onTouch);
 			_imgA.addEventListener(ATouchEvent.UNBINDING, onUnbinding);
 			_imgA.addEventListener(ATouchEvent.CLICK, onClick);
+			
+			_dragFusion.addEventListener(DragEvent.STOP_DRAG, onStopDrag);
 			
 			if(Accelerometer.isSupported){
 				_acce = new Accelerometer;
@@ -145,7 +150,7 @@ package AA
 				TweenLite.to(_dragFusion, 0.3, { scaleX:1.2, scaleY:1.2, ease:Cubic.easeIn } );
 				
 				_dragFusion.startDrag(_pressedTouch, new Rectangle(_startX, _startY, _endX - _startX, _endY - _startY), 0, -80, true);
-				_dragFusion.addEventListener(DragEvent.STOP_DRAG, onStopDrag);
+//				_dragFusion.addEventListener(DragEvent.STOP_DRAG, onStopDrag);
 			}
 			else {
 				
@@ -157,7 +162,7 @@ package AA
 		}
 		
 		private function onStopDrag(e:DragEvent):void{
-			_dragFusion.removeEventListener(DragEvent.STOP_DRAG, onStopDrag);
+//			_dragFusion.removeEventListener(DragEvent.STOP_DRAG, onStopDrag);
 			
 			_imgA.touchable = true;
 			
@@ -181,6 +186,9 @@ package AA
 		private function ____onAcceUpdate(e:AccelerometerEvent):void{
 			var flag_A:int;
 			
+			if(_dragFusion.getDraggingTouch()){
+				return;
+			}
 			if(e.accelerationX <= -0.60){
 				flag_A = TO_RIGHT;
 			}
@@ -226,6 +234,7 @@ package AA
 		
 		private var _moveCount:int;
 		
+		private var _bgA:ImageAA;
 		private var _imgA:ImageAA;
 		private var _imgB:ImageAA;
 		
@@ -246,13 +255,27 @@ package AA
 //			Agony.getLog().simplify(e.type);
 			
 			// to right
-			if(e.touch.rootX < DOUBLE_CLICK_OFFSET && _dragFusion.x < DOUBLE_CLICK_OFFSET){
-				TweenLite.to(_dragFusion, 0.3, { x:_endX, scaleX:1.0, scaleY:1.0, ease:Cubic.easeIn } );
+			if(e.touch.rootX < DOUBLE_CLICK_OFFSET || e.touch.rootX > this.getRoot().getAdapter().rootWidth - DOUBLE_CLICK_OFFSET) {//_dragFusion.x < DOUBLE_CLICK_OFFSET){
+//				TweenLite.to(_dragFusion, 0.3, { x:_endX, scaleX:1.0, scaleY:1.0, ease:Cubic.easeIn } );
+				_pressedTouch = e.touch;
+				_imgA.touchable = false;
+				_pressedTouch.unbinding();
+				
+				TweenLite.to(_dragFusion, 0.3, { scaleX:1.2, scaleY:1.2, ease:Cubic.easeIn } );
+				
+				_dragFusion.startDrag(_pressedTouch, new Rectangle(_startX, _startY, _endX - _startX, _endY - _startY), 0, -80, true);
 			}
 			// to left
-			else if(e.touch.rootX > this.getRoot().getAdapter().rootWidth - DOUBLE_CLICK_OFFSET && _dragFusion.x > this.getRoot().getAdapter().rootWidth - DOUBLE_CLICK_OFFSET){
-				TweenLite.to(_dragFusion, 0.3, { x:_startX, scaleX:1.0, scaleY:1.0, ease:Cubic.easeIn } );
-			}
+			/*else if(e.touch.rootX > this.getRoot().getAdapter().rootWidth - DOUBLE_CLICK_OFFSET && _dragFusion.x > this.getRoot().getAdapter().rootWidth - DOUBLE_CLICK_OFFSET){
+//				TweenLite.to(_dragFusion, 0.3, { x:_startX, scaleX:1.0, scaleY:1.0, ease:Cubic.easeIn } );
+				_pressedTouch = e.touch;
+				_imgA.touchable = false;
+				_pressedTouch.unbinding();
+				
+				TweenLite.to(_dragFusion, 0.3, { scaleX:1.2, scaleY:1.2, ease:Cubic.easeIn } );
+				
+				_dragFusion.startDrag(_pressedTouch, new Rectangle(_startX, _startY, _endX - _startX, _endY - _startY), 0, -80, true);
+			}*/
 		}
 	}
 }

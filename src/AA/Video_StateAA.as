@@ -8,6 +8,7 @@ package AA
 	import org.agony2d.display.AACore;
 	import org.agony2d.display.ImageAA;
 	import org.agony2d.display.StateAA;
+	import org.agony2d.display.filters.ColorMatrixFilterAA;
 	import org.agony2d.display.textures.VideoTextureAA;
 	import org.agony2d.events.ATouchEvent;
 	import org.agony2d.logging.LogMachine;
@@ -94,6 +95,8 @@ public class Video_StateAA extends StateAA
 		this.getFusion().addNode(img_A);
 		ratioA = Math.min(ratioX, ratioY);
 		img_A.scaleX = img_A.scaleY = 1 / ratioA + 0.05;
+		
+//		img_A.filters = [new ColorMatrixFilterAA()];
 		
 		LogMachine.g_instance.simplify("{0} | {1}: {2}", img_A.sourceHeight, img_A.sourceWidth, img_A.scaleY);
 	}

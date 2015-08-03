@@ -12,8 +12,8 @@ package AA {
 			
 			
 			// btn...A
-			this.resA.addBundle(new FilesBundle("ui/btnScale9/B/up.png", "iconA.png"), new TextureAA_BundleHandler);
-			
+//			this.resA.addBundle(new FilesBundle("ui/btnScale9/B/up.png", "iconA.png"), new TextureAA_BundleHandler);
+			this.resA.addBundle(new FilesBundle("bgB.png", "btnA.png", "iconB.png"), new TextureAA_BundleHandler);
 			
 			this.resA.addEventListener(AEvent.COMPLETE, onComplete);
 		}
