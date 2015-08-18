@@ -3,7 +3,7 @@ package AA {
 	import org.agony2d.events.AEvent;
 	import org.agony2d.resource.FilesBundle;
 	import org.agony2d.resource.ResMachine;
-	import org.agony2d.resource.handlers.TextureAA_BundleHandler;
+	import org.agony2d.resource.assetHandlers.TextureAA_BundleHandler;
 	
 	public class Loading150709_kai_StateAA extends StateAA {
 		
